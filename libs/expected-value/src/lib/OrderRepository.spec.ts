@@ -24,9 +24,9 @@ describe('OrderRepository', () => {
     };
     when(databaseMock.get).calledWith(orderId).mockResolvedValue(order);
 
-    const result = await repository.get(orderId);
+    const actual = await repository.get(orderId);
 
-    expect(result).toEqual(order);
+    expect(actual).toEqual(order);
   });
 
   it('should return order successfully - GOOD', async () => {
@@ -38,13 +38,13 @@ describe('OrderRepository', () => {
       customerId,
     };
     when(databaseMock.get).calledWith(orderId).mockResolvedValue(order);
+
+    const actual = await repository.get(orderId);
+
     const expected = {
       id: orderId,
       customerId,
     };
-
-    const result = await repository.get(orderId);
-
-    expect(result).toEqual(expected);
+    expect(actual).toEqual(expected);
   });
 });

@@ -1,7 +1,7 @@
 {
-  "name": "my-lib",
+  "name": "expected-value",
   "$schema": "../../node_modules/nx/schemas/project-schema.json",
-  "sourceRoot": "libs/my-lib/src",
+  "sourceRoot": "libs/expected-value/src",
   "projectType": "library",
   "tags": [],
   "targets": {
@@ -11,11 +11,11 @@
         "{options.outputPath}"
       ],
       "options": {
-        "outputPath": "dist/libs/my-lib",
-        "tsConfig": "libs/my-lib/tsconfig.lib.json",
-        "main": "libs/my-lib/src/index.ts",
+        "outputPath": "dist/libs/expected-value",
+        "tsConfig": "libs/expected-value/tsconfig.lib.json",
+        "main": "libs/expected-value/src/index.ts",
         "assets": [
-          "libs/my-lib/*.md"
+          "libs/expected-value/*.md"
         ]
       }
     }

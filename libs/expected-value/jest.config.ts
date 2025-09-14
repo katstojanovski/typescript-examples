@@ -1,5 +1,5 @@
 export default {
-  displayName: 'my-lib',
+  displayName: 'expected-value',
   preset: '../../jest.preset.js',
   testEnvironment: 'node',
   transform: {
