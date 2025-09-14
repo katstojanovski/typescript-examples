@@ -1,4 +1,8 @@
 import nx from '@nx/eslint-plugin';
+import tseslint from "typescript-eslint";
+import prettier from "eslint-config-prettier";
+import eslintPluginPrettier from "eslint-plugin-prettier";
+
 
 export default [
   ...nx.configs['flat/base'],
@@ -26,17 +30,18 @@ export default [
     },
   },
   {
-    files: [
-      '**/*.ts',
-      '**/*.tsx',
-      '**/*.cts',
-      '**/*.mts',
-      '**/*.js',
-      '**/*.jsx',
-      '**/*.cjs',
-      '**/*.mjs',
-    ],
-    // Override or add rules here
-    rules: {},
+    files: ["**/*.ts", "**/*.tsx"],
+    languageOptions: {
+      parser: tseslint.parser,
+    },
+    plugins: {
+      "@typescript-eslint": tseslint.plugin,
+      prettier: eslintPluginPrettier,
+    },
+    rules: {
+      ...tseslint.configs.recommended.rules,
+      ...prettier.rules,
+      "prettier/prettier": "error",
+    },
   },
 ];
