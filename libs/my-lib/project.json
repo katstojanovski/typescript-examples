@@ -13,6 +13,7 @@
       "options": {
         "outputPath": "dist/libs/my-lib",
         "tsConfig": "libs/my-lib/tsconfig.lib.json",
+        "main": "libs/my-lib/src/index.ts",
         "assets": [
           "libs/my-lib/*.md"
         ]

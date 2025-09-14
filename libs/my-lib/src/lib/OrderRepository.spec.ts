@@ -1,7 +1,7 @@
 import { mock } from 'jest-mock-extended';
 import { Database } from './Database';
 import { OrderRepository } from './OrderRepository';
-import { when } from '../when';
+import { when } from './when';
 
 const systemUnderTest = () => {
   const databaseMock = mock<Database>();
