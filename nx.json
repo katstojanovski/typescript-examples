@@ -1,6 +1,5 @@
 {
   "$schema": "./node_modules/nx/schemas/nx-schema.json",
-  "npmScope": "my-workspace",
   "targetDefaults": {
     "@nx/js:tsc": {
       "cache": true,
@@ -35,9 +34,7 @@
       "options": {
         "targetName": "test"
       },
-      "exclude": [
-        "apps/my-app-e2e/**/*"
-      ]
+      "exclude": []
     }
   ]
 }
