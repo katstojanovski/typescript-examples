@@ -14,7 +14,7 @@ const systemUnderTest = () => {
 };
 
 describe('OrderRepository', () => {
-  it('should return order successfully', async () => {
+  it('should return order successfully - BAD', async () => {
     const { databaseMock, repository } = systemUnderTest();
     const orderId = '1234567890';
     const customerId = 'c2afd554-25bc-4db7-90e6-fda488eb19ff';
@@ -27,5 +27,24 @@ describe('OrderRepository', () => {
     const result = await repository.get(orderId);
 
     expect(result).toEqual(order);
+  });
+
+  it('should return order successfully - GOOD', async () => {
+    const { databaseMock, repository } = systemUnderTest();
+    const orderId = '1234567890';
+    const customerId = 'c2afd554-25bc-4db7-90e6-fda488eb19ff';
+    const order = {
+      id: orderId,
+      customerId,
+    };
+    when(databaseMock.get).calledWith(orderId).mockResolvedValue(order);
+    const expected = {
+      id: orderId,
+      customerId,
+    };
+
+    const result = await repository.get(orderId);
+
+    expect(result).toEqual(expected);
   });
 });
