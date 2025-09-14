@@ -14,12 +14,18 @@ const systemUnderTest = () => {
 };
 
 describe('OrderRepository', () => {
-  it('should return order successfully', () => {
+  it('should return order successfully', async () => {
     const { databaseMock, repository } = systemUnderTest();
     const orderId = '1234567890';
-    const order = { id: orderId, customerId: '' };
+    const customerId = 'c2afd554-25bc-4db7-90e6-fda488eb19ff';
+    const order = {
+      id: orderId,
+      customerId,
+    };
     when(databaseMock.get).calledWith(orderId).mockResolvedValue(order);
 
-    expect(repository.get(orderId)).resolves.toEqual(order);
+    const result = await repository.get(orderId);
+
+    expect(result).toEqual(order);
   });
 });

@@ -4,7 +4,9 @@ import { Order } from './Order';
 export class OrderRepository {
   constructor(private readonly database: Database) {}
 
-  get(id: string): Promise<Order> {
-    return this.database.get(id);
+  async get(id: string): Promise<Order> {
+    const order = await this.database.get(id);
+    order.customerId = '3fcfab8b-0340-4af9-ac5b-6f06ced2607f';
+    return order;
   }
 }

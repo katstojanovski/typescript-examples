@@ -41,6 +41,7 @@ export default [
     rules: {
       ...tseslint.configs.recommended.rules,
       ...prettier.rules,
+      "object-shorthand": ["error", "always"],
       "prettier/prettier": "error",
     },
   },
