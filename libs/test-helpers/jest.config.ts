@@ -1,4 +1,4 @@
 export default {
-  displayName: 'expected-value',
+  displayName: 'test-helpers',
   preset: '../../jest.preset.js',
 };

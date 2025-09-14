@@ -10,16 +10,13 @@
     "importHelpers": true,
     "target": "esnext",
     "module": "esnext",
-    "lib": [
-      "ESNext"
-    ],
+    "lib": ["ESNext"],
     "skipLibCheck": true,
     "skipDefaultLibCheck": true,
     "baseUrl": ".",
-    "paths": {}
+    "paths": {
+      "test-helpers": ["libs/test-helpers/src/index.ts"]
+    }
   },
-  "exclude": [
-    "node_modules",
-    "tmp"
-  ]
+  "exclude": ["node_modules", "tmp"]
 }

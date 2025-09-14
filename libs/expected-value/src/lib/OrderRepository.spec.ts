@@ -22,6 +22,7 @@ describe('OrderRepository', () => {
       id: orderId,
       customerId,
     };
+
     when(databaseMock.get).calledWith(orderId).mockResolvedValue(order);
 
     const actual = await repository.get(orderId);
