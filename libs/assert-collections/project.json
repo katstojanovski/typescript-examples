@@ -1,0 +1,19 @@
+{
+  "name": "assert-collections",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "libs/assert-collections/src",
+  "projectType": "library",
+  "tags": [],
+  "targets": {
+    "build": {
+      "executor": "@nx/js:tsc",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "outputPath": "dist/libs/assert-collections",
+        "main": "libs/assert-collections/src/index.ts",
+        "tsConfig": "libs/assert-collections/tsconfig.lib.json",
+        "assets": ["libs/assert-collections/*.md"]
+      }
+    }
+  }
+}
