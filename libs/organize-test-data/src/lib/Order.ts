@@ -7,11 +7,9 @@ export class Order {
   constructor(props: { id: string; lineItems: Map<number, LineItem> }) {
     this.id = props.id;
 
-    // Create a new map and wrap it with a Proxy
     const newMap = new Map(props.lineItems);
     this.lineItems = createFrozenMap(newMap);
 
-    // Freeze this object, but don't try to freeze the Proxy
     Object.freeze(this);
   }
 

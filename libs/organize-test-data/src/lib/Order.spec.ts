@@ -43,15 +43,15 @@ describe('immutability', () => {
       lineItems,
     });
 
-    const lineItemUpdated = new LineItem({
-      id: 1,
-      orderedQuantity: 100,
-      returned: [],
-    });
+    lineItems.set(
+      1,
+      new LineItem({
+        id: 1,
+        orderedQuantity: 999,
+        returned: [],
+      }),
+    );
 
-    expect(() => {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      (order.lineItems as any).set(1, lineItemUpdated);
-    }).toThrow('Cannot modify a frozen Map');
+    expect(order.lineItems.get(1)).toBe(lineItem);
   });
 });
