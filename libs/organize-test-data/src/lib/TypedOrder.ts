@@ -1,3 +1,5 @@
+import { createFrozenMap } from './immutability';
+
 const TypedOrderBrand = Symbol('TypedOrderBrand');
 
 export type TypedOrder = Readonly<{
@@ -24,11 +26,32 @@ export type TypedReturnReason = 'DAMAGED' | 'UNWANTED' | 'OTHER';
 
 export const createTypedOrder = (props: {
   id: string;
-  lineItems: Map<number, TypedLineItem>;
+  lineItems: Array<
+    Record<
+      number,
+      {
+        id: number;
+        orderedQuantity: number;
+        returned: Array<{ quantity: number; reason: TypedReturnReason }>;
+      }
+    >
+  >;
 }): TypedOrder => {
+  const newMap = new Map<number, TypedLineItem>();
+  for (const itemObj of props.lineItems) {
+    const [key, value] = Object.entries(itemObj)[0];
+    newMap.set(
+      Number(key),
+      createTypedLineItem({
+        id: value.id,
+        orderedQuantity: value.orderedQuantity,
+        returned: value.returned,
+      }),
+    );
+  }
   return Object.freeze({
     id: props.id,
-    lineItems: props.lineItems,
+    lineItems: createFrozenMap(newMap),
     [TypedOrderBrand]: 'TypedOrder',
   }) as TypedOrder;
 };
@@ -85,9 +108,30 @@ export const returnLineItemInOrder = (
   }
 
   const updatedLineItem = returnLineItem(lineItem, returnQuantity, reason);
-
-  const updatedLineItems = new Map(order.lineItems);
-  updatedLineItems.set(lineItemId, updatedLineItem);
+  const updatedLineItems = Array.from(order.lineItems.entries()).map(
+    ([key, item]) =>
+      key === lineItemId
+        ? {
+            [key]: {
+              id: updatedLineItem.id,
+              orderedQuantity: updatedLineItem.orderedQuantity,
+              returned: updatedLineItem.returned as Array<{
+                quantity: number;
+                reason: TypedReturnReason;
+              }>,
+            },
+          }
+        : {
+            [key]: {
+              id: item.id,
+              orderedQuantity: item.orderedQuantity,
+              returned: item.returned as Array<{
+                quantity: number;
+                reason: TypedReturnReason;
+              }>,
+            },
+          },
+  );
 
   return createTypedOrder({
     id: order.id,
