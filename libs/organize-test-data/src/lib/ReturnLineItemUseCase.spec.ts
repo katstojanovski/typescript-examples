@@ -80,23 +80,6 @@ describe('ReturnLineItemUseCase', () => {
       reason,
     );
 
-    expect(actual).toEqual(expected);
-  });
-
-  it('mutation succeeds at runtime if not frozen', () => {
-    const items = new Map<number, LineItem>();
-    items.set(1, new LineItem({ id: 1, orderedQuantity: 2, returned: [] }));
-    const order = new Order({ id: 'order1', lineItems: items });
-    console.log(order);
-
-    // You cannot mutate item properties, but you *can replace the reference* in the map:
-    (order.lineItems as any).set(
-      1,
-      new LineItem({ id: 1, orderedQuantity: 100, returned: [] }),
-    );
-
-    console.log(order);
-
-    // Now the order contains a completely new LineItem
+    expect(actual.normalize()).toEqual(expected.normalize());
   });
 });

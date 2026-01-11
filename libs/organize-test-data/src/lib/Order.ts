@@ -30,6 +30,13 @@ export class Order {
 
     return new Order({ id: this.id, lineItems: updatedLineItems });
   }
+
+  normalize() {
+    return {
+      id: this.id,
+      lineItems: Object.fromEntries(this.lineItems),
+    };
+  }
 }
 
 export class LineItem {
