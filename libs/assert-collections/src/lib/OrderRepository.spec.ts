@@ -12,6 +12,7 @@ const systemUnderTest = () => {
     repository,
   };
 };
+
 describe('OrderRepository', () => {
   it('should get all orders from the database - collection size - BAD', async () => {
     const { databaseMock, repository } = systemUnderTest();
