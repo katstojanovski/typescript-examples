@@ -16,17 +16,14 @@ export class Order {
   }) {
     this.id = props.id;
     this.customerId = props.customerId;
-    // always copy array to preserve immutability
     this.lineItems = [...props.lineItems];
   }
 
   static create(props: CreateOrderProps): Order {
-    // Map raw DTOs to LineItem instances
     const lineItems = props.lineItems.map((li) => LineItem.create(li));
     return new Order({ ...props, lineItems });
   }
 
-  /** Safe method to return a line item */
   returnLineItem(
     lineItemId: number,
     returnQuantity: number,
@@ -41,21 +38,11 @@ export class Order {
       li.id === lineItemId ? updatedLineItem : li,
     );
 
-    // Use explicit fields instead of spreading `this`
     return new Order({
       id: this.id,
       customerId: this.customerId,
       lineItems: updatedLineItems,
     });
-  }
-
-  /** Optional helper to expose DTO for fixtures or serialization */
-  toProps(): CreateOrderProps {
-    return {
-      id: this.id,
-      customerId: this.customerId,
-      lineItems: this.lineItems.map((li) => li.toProps()),
-    };
   }
 }
 
@@ -86,19 +73,11 @@ export class LineItem {
     }
 
     return new LineItem({
-      ...this.toProps(),
-      returned: [...this.returned, { quantity: returnQuantity, reason }],
-    });
-  }
-
-  /** Helper to convert to DTO */
-  toProps(): CreateLineItemProps {
-    return {
       id: this.id,
       orderedQuantity: this.orderedQuantity,
-      returned: [...this.returned],
       unitPrice: this.unitPrice,
-    };
+      returned: [...this.returned, { quantity: returnQuantity, reason }],
+    });
   }
 }
 
