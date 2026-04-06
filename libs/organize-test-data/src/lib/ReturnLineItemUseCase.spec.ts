@@ -1,9 +1,13 @@
-import { Order } from './Order';
+import {
+  ExceedsOrderedQuantityError,
+  LineItemNotFoundError,
+  Order,
+} from './Order';
 import { OrderRepository } from './OrderRepository';
 import { ReturnLineItemUseCase } from './ReturnLineItemUseCase';
 import { mock } from 'jest-mock-extended';
 import { when } from '@lib/test-helpers';
-import { orderFixture, LINE_ITEM_ID, ORDER_ID } from './test-data';
+import { orderFixture } from './TestData';
 
 const systemUnderTest = () => {
   const repositoryMock = mock<OrderRepository>();
@@ -19,35 +23,88 @@ describe('ReturnLineItemUseCase', () => {
   it('should return a line item from an order - VERBOSE', async () => {
     const { repositoryMock, useCase } = systemUnderTest();
 
-    const orderId = 'order123';
-    const lineItemId = 1;
-    const returnQuantity = 2;
-    const reason = 'DAMAGED';
-    const customerId = 'customer123';
-    const unitPrice = 10.35;
-
     const initialOrder = Order.create({
-      id: orderId,
-      customerId,
+      id: '1234567890',
+      customerId: '95446fe0-5177-427b-bac4-bd8b7cc7f4ab',
       lineItems: [
         {
-          id: lineItemId,
+          id: 1,
           orderedQuantity: 5,
-          returned: [],
-          unitPrice,
+          returned: [{ quantity: 1, reason: 'DAMAGED' }],
+          unitPrice: 10.35,
+          sku: 'SKU123',
+          name: 'Product Name',
         },
       ],
     });
 
     const updatedOrder = Order.create({
-      id: orderId,
-      customerId,
+      id: '1234567890',
+      customerId: '95446fe0-5177-427b-bac4-bd8b7cc7f4ab',
       lineItems: [
         {
-          id: lineItemId,
+          id: 1,
           orderedQuantity: 5,
-          returned: [{ quantity: returnQuantity, reason }],
-          unitPrice,
+          returned: [{ quantity: 3, reason: 'DAMAGED' }],
+          unitPrice: 10.35,
+          sku: 'SKU123',
+          name: 'Product Name',
+        },
+      ],
+    });
+
+    when(repositoryMock.get)
+      .calledWith('1234567890')
+      .mockResolvedValue(initialOrder);
+
+    when(repositoryMock.save)
+      .calledWith(updatedOrder)
+      .mockResolvedValue(updatedOrder);
+
+    const expected = Order.create({
+      id: '1234567890',
+      customerId: '95446fe0-5177-427b-bac4-bd8b7cc7f4ab',
+      lineItems: [
+        {
+          id: 1,
+          orderedQuantity: 5,
+          returned: [{ quantity: 3, reason: 'DAMAGED' }],
+          unitPrice: 10.35,
+          sku: 'SKU123',
+          name: 'Product Name',
+        },
+      ],
+    });
+
+    const actual = await useCase.execute({
+      orderId: '1234567890',
+      lineItemId: 1,
+      returnQuantity: 2,
+      reason: 'DAMAGED',
+    });
+
+    expect(actual).toEqual(expected);
+  });
+
+  it('should return a line item from an order - CONCISE', async () => {
+    // Arrange
+
+    const { repositoryMock, useCase } = systemUnderTest();
+
+    const initialOrder = orderFixture({
+      lineItems: [
+        {
+          returned: [{ quantity: 1, reason: 'DAMAGED' }],
+        },
+      ],
+    });
+    const orderId = initialOrder.id;
+    const lineItemId = initialOrder.lineItems[0].id;
+
+    const updatedOrder = orderFixture({
+      lineItems: [
+        {
+          returned: [{ quantity: 3, reason: 'DAMAGED' }],
         },
       ],
     });
@@ -60,67 +117,205 @@ describe('ReturnLineItemUseCase', () => {
       .calledWith(updatedOrder)
       .mockResolvedValue(updatedOrder);
 
-    const expected = Order.create({
-      id: orderId,
-      customerId,
+    // Act
+
+    const actual = await useCase.execute({
+      orderId,
+      lineItemId,
+      returnQuantity: 2,
+      reason: 'DAMAGED',
+    });
+
+    // Assert
+
+    const expected = orderFixture({
       lineItems: [
         {
-          id: lineItemId,
-          orderedQuantity: 5,
-          returned: [{ quantity: returnQuantity, reason }],
-          unitPrice,
+          returned: [{ quantity: 3, reason: 'DAMAGED' }],
         },
       ],
     });
 
-    const actual = await useCase.execute(
-      orderId,
-      lineItemId,
-      returnQuantity,
-      reason,
-    );
-
     expect(actual).toEqual(expected);
   });
 
-  it('should return a line item from an order - CONCISE', async () => {
+  it('should return a line item with a new return reason - CONCISE', async () => {
+    // Arrange
+
     const { repositoryMock, useCase } = systemUnderTest();
 
-    const returnQuantity = 2;
-    const reason = 'DAMAGED';
+    const initialOrder = orderFixture({
+      lineItems: [
+        {
+          returned: [{ quantity: 1, reason: 'DAMAGED' }],
+        },
+      ],
+    });
 
-    const initialOrder = orderFixture();
+    const orderId = initialOrder.id;
+    const lineItemId = initialOrder.lineItems[0].id;
 
     const updatedOrder = orderFixture({
       lineItems: [
         {
-          returned: [{ quantity: returnQuantity, reason }],
+          returned: [
+            { quantity: 1, reason: 'DAMAGED' },
+            { quantity: 2, reason: 'NOT_AS_DESCRIBED' },
+          ],
         },
       ],
     });
 
     when(repositoryMock.get)
-      .calledWith(ORDER_ID)
+      .calledWith(orderId)
       .mockResolvedValue(initialOrder);
 
     when(repositoryMock.save)
       .calledWith(updatedOrder)
       .mockResolvedValue(updatedOrder);
 
+    // Act
+
+    const actual = await useCase.execute({
+      orderId,
+      lineItemId,
+      returnQuantity: 2,
+      reason: 'NOT_AS_DESCRIBED',
+    });
+
+    // Assert
+
     const expected = orderFixture({
       lineItems: [
         {
-          returned: [{ quantity: returnQuantity, reason }],
+          returned: [
+            { quantity: 1, reason: 'DAMAGED' },
+            { quantity: 2, reason: 'NOT_AS_DESCRIBED' },
+          ],
         },
       ],
     });
 
-    const actual = await useCase.execute(
-      ORDER_ID,
-      LINE_ITEM_ID,
-      returnQuantity,
-      reason,
-    );
+    expect(actual).toEqual(expected);
+  });
+
+  it('should throw an error if returned quantity is greater than ordered quantity - CONCISE', async () => {
+    // Arrange
+
+    const { repositoryMock, useCase } = systemUnderTest();
+
+    const initialOrder = orderFixture({
+      lineItems: [
+        {
+          orderedQuantity: 5,
+          returned: [{ quantity: 1, reason: 'DAMAGED' }],
+        },
+      ],
+    });
+
+    const orderId = initialOrder.id;
+    const lineItemId = initialOrder.lineItems[0].id;
+
+    when(repositoryMock.get)
+      .calledWith(orderId)
+      .mockResolvedValue(initialOrder);
+
+    // Act & Assert
+
+    await expect(
+      useCase.execute({
+        orderId,
+        lineItemId,
+        returnQuantity: 5,
+        reason: 'DAMAGED',
+      }),
+    ).rejects.toThrow(ExceedsOrderedQuantityError);
+  });
+
+  it('should throw an error if line item is not found in order - CONCISE', async () => {
+    // Arrange
+
+    const { repositoryMock, useCase } = systemUnderTest();
+
+    const initialOrder = orderFixture();
+
+    const orderId = initialOrder.id;
+
+    when(repositoryMock.get)
+      .calledWith(orderId)
+      .mockResolvedValue(initialOrder);
+
+    // Act & Assert
+
+    await expect(
+      useCase.execute({
+        orderId,
+        lineItemId: 999,
+        returnQuantity: 1,
+        reason: 'DAMAGED',
+      }),
+    ).rejects.toThrow(LineItemNotFoundError);
+  });
+
+  it('should preserve other returns when adding to existing reason - CONCISE', async () => {
+    // Arrange
+
+    const { repositoryMock, useCase } = systemUnderTest();
+
+    const initialOrder = orderFixture({
+      lineItems: [
+        {
+          returned: [
+            { quantity: 1, reason: 'DAMAGED' },
+            { quantity: 2, reason: 'NOT_AS_DESCRIBED' },
+          ],
+        },
+      ],
+    });
+
+    const orderId = initialOrder.id;
+    const lineItemId = initialOrder.lineItems[0].id;
+
+    const updatedOrder = orderFixture({
+      lineItems: [
+        {
+          returned: [
+            { quantity: 3, reason: 'DAMAGED' },
+            { quantity: 2, reason: 'NOT_AS_DESCRIBED' },
+          ],
+        },
+      ],
+    });
+
+    when(repositoryMock.get)
+      .calledWith(orderId)
+      .mockResolvedValue(initialOrder);
+
+    when(repositoryMock.save)
+      .calledWith(updatedOrder)
+      .mockResolvedValue(updatedOrder);
+
+    // Act
+
+    const actual = await useCase.execute({
+      orderId,
+      lineItemId,
+      returnQuantity: 2,
+      reason: 'DAMAGED',
+    });
+
+    // Assert
+
+    const expected = orderFixture({
+      lineItems: [
+        {
+          returned: [
+            { quantity: 3, reason: 'DAMAGED' },
+            { quantity: 2, reason: 'NOT_AS_DESCRIBED' },
+          ],
+        },
+      ],
+    });
 
     expect(actual).toEqual(expected);
   });

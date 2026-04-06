@@ -4,6 +4,20 @@ export type CreateOrderProps = {
   lineItems: CreateLineItemProps[];
 };
 
+export class ExceedsOrderedQuantityError extends Error {
+  constructor() {
+    super('Return quantity exceeds ordered quantity');
+    this.name = 'ExceedsOrderedQuantityError';
+  }
+}
+
+export class LineItemNotFoundError extends Error {
+  constructor() {
+    super('Line item not found in order');
+    this.name = 'LineItemNotFoundError';
+  }
+}
+
 export class Order {
   public readonly id: string;
   public readonly customerId: string;
@@ -30,7 +44,7 @@ export class Order {
     reason: ReturnReason,
   ): Order {
     const lineItem = this.lineItems.find((li) => li.id === lineItemId);
-    if (!lineItem) throw new Error('Line item not found');
+    if (!lineItem) throw new LineItemNotFoundError();
 
     const updatedLineItem = lineItem.return(returnQuantity, reason);
 
@@ -39,27 +53,29 @@ export class Order {
     );
 
     return new Order({
-      id: this.id,
-      customerId: this.customerId,
+      ...this,
       lineItems: updatedLineItems,
     });
   }
 }
 
+type ReturnEntry = { quantity: number; reason: ReturnReason };
+
 export class LineItem {
   public readonly id: number;
+  public readonly sku: string;
   public readonly orderedQuantity: number;
-  public readonly returned: readonly {
-    quantity: number;
-    reason: ReturnReason;
-  }[];
+  public readonly name: string;
+  public readonly returned: readonly ReturnEntry[];
   public readonly unitPrice: number;
 
   private constructor(props: CreateLineItemProps) {
     this.id = props.id;
+    this.sku = props.sku;
     this.orderedQuantity = props.orderedQuantity;
     this.returned = [...props.returned];
     this.unitPrice = props.unitPrice;
+    this.name = props.name;
   }
 
   static create(props: CreateLineItemProps): LineItem {
@@ -69,23 +85,36 @@ export class LineItem {
   return(returnQuantity: number, reason: ReturnReason): LineItem {
     const totalReturned = this.returned.reduce((sum, r) => sum + r.quantity, 0);
     if (totalReturned + returnQuantity > this.orderedQuantity) {
-      throw new Error('Return quantity exceeds ordered quantity');
+      throw new ExceedsOrderedQuantityError();
     }
 
+    const updatedReturned = this.addOrUpdateReturn(returnQuantity, reason);
+
     return new LineItem({
-      id: this.id,
-      orderedQuantity: this.orderedQuantity,
-      unitPrice: this.unitPrice,
-      returned: [...this.returned, { quantity: returnQuantity, reason }],
+      ...this,
+      returned: updatedReturned,
     });
+  }
+
+  private addOrUpdateReturn(
+    quantity: number,
+    reason: ReturnReason,
+  ): ReturnEntry[] {
+    return this.returned.some((r) => r.reason === reason)
+      ? this.returned.map((r) =>
+          r.reason === reason ? { ...r, quantity: r.quantity + quantity } : r,
+        )
+      : [...this.returned, { quantity, reason }];
   }
 }
 
 export type CreateLineItemProps = {
   id: number;
   orderedQuantity: number;
-  returned: { quantity: number; reason: ReturnReason }[];
+  returned: ReturnEntry[];
   unitPrice: number;
+  sku: string;
+  name: string;
 };
 
 export type ReturnReason = 'DAMAGED' | 'NOT_AS_DESCRIBED' | 'OTHER';
