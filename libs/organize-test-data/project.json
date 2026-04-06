@@ -1,0 +1,19 @@
+{
+  "name": "organize-test-data",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "libs/organize-test-data/src",
+  "projectType": "library",
+  "tags": [],
+  "targets": {
+    "build": {
+      "executor": "@nx/js:tsc",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "outputPath": "dist/libs/organize-test-data",
+        "main": "libs/organize-test-data/src/index.ts",
+        "tsConfig": "libs/organize-test-data/tsconfig.lib.json",
+        "assets": ["libs/organize-test-data/*.md"]
+      }
+    }
+  }
+}
