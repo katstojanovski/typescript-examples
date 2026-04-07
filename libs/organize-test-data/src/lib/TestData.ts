@@ -2,7 +2,7 @@ import { CreateOrderProps, Order } from './Order';
 import merge from 'lodash.merge';
 import { PartialDeep } from '@lib/test-helpers';
 
-export const orderFixture = (
+export const buildOrder = (
   overrides?: PartialDeep<CreateOrderProps>,
 ): Order => {
   const defaults: CreateOrderProps = {

@@ -7,7 +7,7 @@ import { OrderRepository } from './OrderRepository';
 import { ReturnLineItemUseCase } from './ReturnLineItemUseCase';
 import { mock } from 'jest-mock-extended';
 import { when } from '@lib/test-helpers';
-import { orderFixture } from './TestData';
+import { buildOrder } from './TestData';
 
 const systemUnderTest = () => {
   const repositoryMock = mock<OrderRepository>();
@@ -91,7 +91,7 @@ describe('ReturnLineItemUseCase', () => {
 
     const { repositoryMock, useCase } = systemUnderTest();
 
-    const initialOrder = orderFixture({
+    const initialOrder = buildOrder({
       lineItems: [
         {
           returned: [{ quantity: 1, reason: 'DAMAGED' }],
@@ -101,7 +101,7 @@ describe('ReturnLineItemUseCase', () => {
     const orderId = initialOrder.id;
     const lineItemId = initialOrder.lineItems[0].id;
 
-    const updatedOrder = orderFixture({
+    const updatedOrder = buildOrder({
       lineItems: [
         {
           returned: [{ quantity: 3, reason: 'DAMAGED' }],
@@ -128,7 +128,7 @@ describe('ReturnLineItemUseCase', () => {
 
     // Assert
 
-    const expected = orderFixture({
+    const expected = buildOrder({
       lineItems: [
         {
           returned: [{ quantity: 3, reason: 'DAMAGED' }],
@@ -144,7 +144,7 @@ describe('ReturnLineItemUseCase', () => {
 
     const { repositoryMock, useCase } = systemUnderTest();
 
-    const initialOrder = orderFixture({
+    const initialOrder = buildOrder({
       lineItems: [
         {
           returned: [{ quantity: 1, reason: 'DAMAGED' }],
@@ -155,7 +155,7 @@ describe('ReturnLineItemUseCase', () => {
     const orderId = initialOrder.id;
     const lineItemId = initialOrder.lineItems[0].id;
 
-    const updatedOrder = orderFixture({
+    const updatedOrder = buildOrder({
       lineItems: [
         {
           returned: [
@@ -185,7 +185,7 @@ describe('ReturnLineItemUseCase', () => {
 
     // Assert
 
-    const expected = orderFixture({
+    const expected = buildOrder({
       lineItems: [
         {
           returned: [
@@ -204,7 +204,7 @@ describe('ReturnLineItemUseCase', () => {
 
     const { repositoryMock, useCase } = systemUnderTest();
 
-    const initialOrder = orderFixture({
+    const initialOrder = buildOrder({
       lineItems: [
         {
           orderedQuantity: 5,
@@ -237,7 +237,7 @@ describe('ReturnLineItemUseCase', () => {
 
     const { repositoryMock, useCase } = systemUnderTest();
 
-    const initialOrder = orderFixture();
+    const initialOrder = buildOrder();
 
     const orderId = initialOrder.id;
 
@@ -262,7 +262,7 @@ describe('ReturnLineItemUseCase', () => {
 
     const { repositoryMock, useCase } = systemUnderTest();
 
-    const initialOrder = orderFixture({
+    const initialOrder = buildOrder({
       lineItems: [
         {
           returned: [
@@ -276,7 +276,7 @@ describe('ReturnLineItemUseCase', () => {
     const orderId = initialOrder.id;
     const lineItemId = initialOrder.lineItems[0].id;
 
-    const updatedOrder = orderFixture({
+    const updatedOrder = buildOrder({
       lineItems: [
         {
           returned: [
@@ -306,7 +306,7 @@ describe('ReturnLineItemUseCase', () => {
 
     // Assert
 
-    const expected = orderFixture({
+    const expected = buildOrder({
       lineItems: [
         {
           returned: [
