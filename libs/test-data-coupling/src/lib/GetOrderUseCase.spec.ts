@@ -27,7 +27,7 @@ describe('GetOrderUseCase', () => {
       zipCode: '12345',
     });
 
-    const order = Order.create({+
+    const order = Order.create({
       id: '1234567890',
       address,
     });
