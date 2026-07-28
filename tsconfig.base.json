@@ -17,6 +17,7 @@
     "baseUrl": ".",
     "paths": {
       "@lib/*": ["libs/*"],
+      "test-data-coupling": ["libs/test-data-coupling/src/index.ts"]
     }
   },
   "exclude": ["node_modules", "tmp"]
