@@ -22,7 +22,7 @@ describe('GetOrderUseCase', () => {
 
     const address = Address.create({
       street: 'Baker Street',
-      number: '221B',
+      houseNumber: '221B',
       city: 'London',
       zipCode: '12345',
     });
@@ -51,7 +51,7 @@ describe('GetOrderUseCase', () => {
 
     const address = Address.create({
       street: 'Baker Street',
-      number: '221B',
+      houseNumber: '221B',
       city: 'London',
       zipCode: '12345',
     });

@@ -17,18 +17,18 @@ export class Order {
 
 export class Address {
   public readonly street: string;
-  public readonly number: string;
+  public readonly houseNumber: string;
   public readonly city: string;
   public readonly zipCode: string;
 
   private constructor(props: {
     street: string;
-    number: string;
+    houseNumber: string;
     city: string;
     zipCode: string;
   }) {
     this.street = props.street;
-    this.number = props.number;
+    this.houseNumber = props.houseNumber;
     this.city = props.city;
     this.zipCode = props.zipCode;
   }
@@ -40,7 +40,7 @@ export class Address {
 
 export type CreateAddressProps = {
   street: string;
-  number: string;
+  houseNumber: string;
   city: string;
   zipCode: string;
 };
