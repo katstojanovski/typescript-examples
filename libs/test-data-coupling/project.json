@@ -1,0 +1,9 @@
+{
+  "name": "test-data-coupling",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "libs/test-data-coupling/src",
+  "projectType": "library",
+  "tags": [],
+  "// targets": "to see all targets run: nx show project test-data-coupling --web",
+  "targets": {}
+}
